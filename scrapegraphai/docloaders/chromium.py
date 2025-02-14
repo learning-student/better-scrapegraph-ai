@@ -28,7 +28,7 @@ class ChromiumLoader(BaseLoader):
         self,
         urls: List[str],
         *,
-        backend: str = "playwright",
+        backend: str = "patchright",
         headless: bool = True,
         proxy: Optional[Proxy] = None,
         load_state: str = "domcontentloaded",
