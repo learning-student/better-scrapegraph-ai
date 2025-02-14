@@ -260,6 +260,7 @@ class FetchNode(BaseNode):
 
         self.logger.info(f"--- (Fetching HTML from: {source}) ---")
         if self.use_soup:
+            self.logger.info("Using BeautifulSoup to fetch HTML content")
             response = requests.get(source)
             if response.status_code == 200:
                 if not response.text.strip():
@@ -287,6 +288,7 @@ class FetchNode(BaseNode):
                 loader_kwargs = self.node_config.get("loader_kwargs", {})
 
             if self.browser_base:
+                self.logger.info("Using BrowserBase to fetch HTML content")
                 try:
                     from ..docloaders.browser_base import browser_base_fetch
                 except ImportError:
@@ -306,6 +308,7 @@ class FetchNode(BaseNode):
                     for content in data
                 ]
             elif self.scrape_do:
+                self.logger.info("Using ScrapeDo to fetch HTML content")
                 from ..docloaders.scrape_do import scrape_do_fetch
 
                 if (
@@ -325,6 +328,7 @@ class FetchNode(BaseNode):
 
                 document = [Document(page_content=data, metadata={"source": source})]
             else:
+                self.logger.info("Using ChromiumLoader to fetch HTML content")
                 loader = ChromiumLoader(
                     [source],
                     headless=self.headless,
@@ -334,6 +338,7 @@ class FetchNode(BaseNode):
                 document = loader.load()
 
             if not document or not document[0].page_content.strip():
+                self.logger.debug(f"Fetched content: {document[0].page_content.strip()}")
                 raise ValueError(
                     """No HTML body content found in
                                  the document fetched by ChromiumLoader."""
