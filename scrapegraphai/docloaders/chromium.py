@@ -75,7 +75,7 @@ class ChromiumLoader(BaseLoader):
 
     async def scrape(self, url: str) -> str:
         if self.backend == "patchright":
-            return await self.ascrape_playwright(url)
+            return await self.ascrape_patchright(url)
         elif self.backend == "selenium":
             try:
                 return await self.ascrape_undetected_chromedriver(url)
@@ -312,9 +312,9 @@ class ChromiumLoader(BaseLoader):
 
         return results
 
-    async def ascrape_playwright(self, url: str, browser_name: str = "chromium") -> str:
+    async def ascrape_patchright(self, url: str, browser_name: str = "chromium") -> str:
         """
-        Asynchronously scrape the content of a given URL using Playwright's async API.
+        Asynchronously scrape the content of a given URL using patchright's async API.
 
         Args:
             url (str): The URL to scrape.
