@@ -368,9 +368,10 @@ class FetchNode(BaseNode):
                     **loader_kwargs,
                 )
                 document = loader.load()
+                self.logger.info(f"Fetched content: {document[0].page_content.strip()}")
+
 
             if not document or not document[0].page_content.strip():
-                self.logger.debug(f"Fetched content: {document[0].page_content.strip()}")
                 raise ValueError(
                     """No HTML body content found in
                                  the document fetched by ChromiumLoader."""

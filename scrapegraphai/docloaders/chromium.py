@@ -65,6 +65,7 @@ class ChromiumLoader(BaseLoader):
         self.user_data_dir = user_data_dir
         self.browser_config = kwargs
         self.headless = headless
+        self.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
         self.proxy = parse_or_search_proxy(proxy) if proxy else None
         self.urls = urls
         self.load_state = load_state
@@ -237,11 +238,13 @@ class ChromiumLoader(BaseLoader):
                 async with async_playwright() as p:
                     browser = None
                     if browser_name == "chromium":
-                        browser = await p.chromium.launch(
-                            user_data_dir=self.user_data_dir,
+                        browser = await p.chromium.launch_persistent_context(
                             headless=self.headless,
-                            no_viewport=True,
+                            user_data_dir=self.user_data_dir,
                             proxy=self.proxy,
+                            user_agent=self.user_agent,
+                            no_viewport=True,
+                            channel="chrome",
                             **self.browser_config,
                         )
                     else:
@@ -341,19 +344,19 @@ class ChromiumLoader(BaseLoader):
                 async with async_playwright() as p, async_timeout.timeout(self.timeout):
                     browser = None
                     if browser_name == "chromium":
-                        browser = await p.chromium.launch(
+                        browser = await p.chromium.launch_persistent_context(
                             headless=self.headless,
                             user_data_dir=self.user_data_dir,
-                            proxy=self.proxy,
                             no_viewport=True,
+                            channel="chrome",
+                            proxy=self.proxy,
+                            user_agent=self.user_agent,
                             **self.browser_config,
                         )
                     else:
                         raise ValueError(f"Invalid browser name: {browser_name}")
-                    context = await browser.new_context(
-                        storage_state=self.storage_state
-                    )
-                    page = await context.new_page()
+                
+                    page = await browser.new_page()
                     await page.goto(url, wait_until="domcontentloaded")
                     await page.wait_for_load_state(self.load_state)
                     results = await page.content()
@@ -394,8 +397,11 @@ class ChromiumLoader(BaseLoader):
                 async with async_playwright() as p, async_timeout.timeout(self.timeout):
                     browser = None
                     if browser_name == "chromium":
-                        browser = await p.chromium.launch(
+                        browser = await p.chromium.launch_persistent_context(
                             headless=self.headless,
+                            user_data_dir='./data',
+                            no_viewport=True,
+                            channel="chrome",
                             proxy=self.proxy,
                             **self.browser_config,
                         )
