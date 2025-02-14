@@ -237,7 +237,7 @@ class ChromiumLoader(BaseLoader):
                 async with async_playwright() as p:
                     browser = None
                     if browser_name == "chromium":
-                        browser = await p.chromium.launch_persistent_context(
+                        browser = await p.chromium.launch(
                             user_data_dir=self.user_data_dir,
                             headless=self.headless,
                             no_viewport=True,
@@ -341,7 +341,7 @@ class ChromiumLoader(BaseLoader):
                 async with async_playwright() as p, async_timeout.timeout(self.timeout):
                     browser = None
                     if browser_name == "chromium":
-                        browser = await p.chromium.launch_persistent_context(
+                        browser = await p.chromium.launch(
                             headless=self.headless,
                             user_data_dir=self.user_data_dir,
                             proxy=self.proxy,

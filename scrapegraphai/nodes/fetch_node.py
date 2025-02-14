@@ -85,7 +85,7 @@ class FetchNode(BaseNode):
         )
 
         self.user_key = (
-            str(uuid.uuid4()) if node_config is None else node_config.get("user_key", str(uuid.uuid4()))
+            str(uuid.uuid4()) if node_config is None  else node_config.get("user_key", str(uuid.uuid4()))
         )
 
     def execute(self, state):
