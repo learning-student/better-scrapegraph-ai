@@ -28,6 +28,7 @@ class ChromiumLoader(BaseLoader):
         self,
         urls: List[str],
         *,
+        user_data_dir: str = None,
         backend: str = "patchright",
         headless: bool = True,
         proxy: Optional[Proxy] = None,
@@ -61,6 +62,7 @@ class ChromiumLoader(BaseLoader):
 
         dynamic_import(backend, message)
 
+        self.user_data_dir = user_data_dir
         self.browser_config = kwargs
         self.headless = headless
         self.proxy = parse_or_search_proxy(proxy) if proxy else None
@@ -236,7 +238,9 @@ class ChromiumLoader(BaseLoader):
                     browser = None
                     if browser_name == "chromium":
                         browser = await p.chromium.launch_persistent_context(
+                            user_data_dir=self.user_data_dir,
                             headless=self.headless,
+                            no_viewport=True,
                             proxy=self.proxy,
                             **self.browser_config,
                         )
@@ -339,6 +343,7 @@ class ChromiumLoader(BaseLoader):
                     if browser_name == "chromium":
                         browser = await p.chromium.launch_persistent_context(
                             headless=self.headless,
+                            user_data_dir=self.user_data_dir,
                             proxy=self.proxy,
                             no_viewport=True,
                             **self.browser_config,

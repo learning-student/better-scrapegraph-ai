@@ -3,7 +3,9 @@ FetchNode Module
 """
 
 import json
+import os
 from typing import List, Optional
+import uuid
 
 import requests
 from langchain_community.document_loaders import PyPDFLoader
@@ -80,6 +82,10 @@ class FetchNode(BaseNode):
 
         self.storage_state = (
             None if node_config is None else node_config.get("storage_state", None)
+        )
+
+        self.user_key = (
+            str(uuid.uuid4()) if node_config is None else node_config.get("user_key", str(uuid.uuid4()))
         )
 
     def execute(self, state):
@@ -242,6 +248,31 @@ class FetchNode(BaseNode):
         state.update({self.output[0]: compressed_document})
         return state
 
+    def get_tmp_user_data_dir(self, user_key: str) -> str:
+        """
+        Generates a temporary user data directory path based on the provided user key.
+
+        Args:
+            user_key (str): The user key to generate the temporary user data directory for.
+
+        Returns:
+            str: The temporary user data directory path.
+
+        Raises:
+            ValueError: If the user_key is empty or contains only whitespace.
+        """
+        if not user_key or user_key.strip() == "":
+            raise ValueError("The user_key must not be empty or contain only whitespace.")
+
+        os_tmp_dir = os.getenv("TMPDIR", "/tmp")
+        user_data_dir = f"{os_tmp_dir}/user_{user_key}"
+        
+        # Ensure the directory exists
+        os.makedirs(user_data_dir, exist_ok=True)
+        
+        return user_data_dir
+
+
     def handle_web_source(self, state, source):
         """
         Handles the web source by fetching HTML content from a URL,
@@ -333,6 +364,7 @@ class FetchNode(BaseNode):
                     [source],
                     headless=self.headless,
                     storage_state=self.storage_state,
+                    user_data_dir=self.get_tmp_user_data_dir(self.user_key),
                     **loader_kwargs,
                 )
                 document = loader.load()

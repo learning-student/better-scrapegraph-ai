@@ -111,6 +111,7 @@ class SmartScraperGraph(AbstractGraph):
                 "browser_base": self.config.get("browser_base"),
                 "scrape_do": self.config.get("scrape_do"),
                 "storage_state": self.config.get("storage_state"),
+                "user_key": self.config.get("user_key"),
             },
         )
         parse_node = ParseNode(
