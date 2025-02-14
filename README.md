@@ -33,7 +33,7 @@ The reference page for Scrapegraph-ai is available on the official page of PyPI:
 pip install scrapegraphai
 
 # IMPORTANT (for fetching websites content)
-playwright install
+patchright install chromium
 ```
 
 **Note**: it is recommended to install the library in a virtual environment to avoid conflicts with other libraries 🐱

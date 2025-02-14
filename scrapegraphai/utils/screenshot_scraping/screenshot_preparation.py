@@ -5,7 +5,7 @@ screenshot_preparation module
 from io import BytesIO
 
 import numpy as np
-from playwright.async_api import async_playwright
+from patchright.async_api import async_playwright
 
 
 async def take_screenshot(url: str, save_path: str = None, quality: int = 100):
@@ -27,7 +27,7 @@ async def take_screenshot(url: str, save_path: str = None, quality: int = 100):
         ) from e
 
     async with async_playwright() as p:
-        browser = await p.chromium.launch(headless=True)
+        browser = await p.chromium.launch_persistent_context(headless=True)
         page = await browser.new_page()
         await page.goto(url)
         image_bytes = await page.screenshot(

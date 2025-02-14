@@ -4,7 +4,7 @@ fetch_screen_node module
 
 from typing import List, Optional
 
-from playwright.sync_api import sync_playwright
+from patchright.sync_api import sync_playwright
 
 from .base_node import BaseNode
 
@@ -31,7 +31,7 @@ class FetchScreenNode(BaseNode):
         self.logger.info(f"--- Executing {self.node_name} Node ---")
 
         with sync_playwright() as p:
-            browser = p.chromium.launch()
+            browser = p.chromium.launch_persistent_context()
             page = browser.new_page()
             page.goto(self.url)
 

@@ -61,14 +61,14 @@ def test_srcfile_import_missing_spec_loader(mocker):
 
 def test_dynamic_import_success():
     print(sys.modules)
-    modname = "playwright"
+    modname = "patchright"
     assert modname not in sys.modules
 
     dynamic_import(modname)
 
     assert modname in sys.modules
 
-    import playwright  # noqa: F401
+    import patchright# noqa: F401
 
 
 def test_dynamic_import_module_already_imported():

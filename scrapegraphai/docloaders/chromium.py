@@ -334,8 +334,7 @@ class ChromiumLoader(BaseLoader):
             RuntimeError: When retry limit is reached without successful scraping
             ValueError: When an invalid browser name is provided
         """
-        from playwright.async_api import async_playwright
-        from undetected_playwright import Malenia
+        from patchright.async_api import async_playwright
 
         logger.info(f"Starting scraping with {self.backend}...")
         results = ""
@@ -346,15 +345,10 @@ class ChromiumLoader(BaseLoader):
                 async with async_playwright() as p, async_timeout.timeout(self.timeout):
                     browser = None
                     if browser_name == "chromium":
-                        browser = await p.chromium.launch(
+                        browser = await p.chromium.launch_persistent_context(
                             headless=self.headless,
                             proxy=self.proxy,
-                            **self.browser_config,
-                        )
-                    elif browser_name == "firefox":
-                        browser = await p.firefox.launch(
-                            headless=self.headless,
-                            proxy=self.proxy,
+                            no_viewport=True,
                             **self.browser_config,
                         )
                     else:
@@ -362,7 +356,6 @@ class ChromiumLoader(BaseLoader):
                     context = await browser.new_context(
                         storage_state=self.storage_state
                     )
-                    await Malenia.apply_stealth(context)
                     page = await context.new_page()
                     await page.goto(url, wait_until="domcontentloaded")
                     await page.wait_for_load_state(self.load_state)
