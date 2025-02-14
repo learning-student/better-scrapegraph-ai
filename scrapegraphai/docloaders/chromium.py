@@ -16,7 +16,7 @@ class ChromiumLoader(BaseLoader):
     Chromium web driver with proxy protection.
 
     Attributes:
-        backend: The web driver backend library; defaults to 'playwright'.
+        backend: The web driver backend library; defaults to 'patchright'.
         browser_config: A dictionary containing additional browser kwargs.
         headless: Whether to run browser in headless mode.
         proxy: A dictionary containing proxy settings; None disables protection.
@@ -42,7 +42,7 @@ class ChromiumLoader(BaseLoader):
         """Initialize the loader with a list of URL paths.
 
         Args:
-            backend: The web driver backend library; defaults to 'playwright'.
+            backend: The web driver backend library; defaults to 'patchright'.
             headless: Whether to run browser in headless mode.
             proxy: A dictionary containing proxy information; None disables protection.
             urls: A list of URLs to scrape content from.
@@ -74,7 +74,7 @@ class ChromiumLoader(BaseLoader):
         self.timeout = kwargs.get("timeout", timeout)
 
     async def scrape(self, url: str) -> str:
-        if self.backend == "playwright":
+        if self.backend == "patchright":
             return await self.ascrape_playwright(url)
         elif self.backend == "selenium":
             try:
@@ -173,7 +173,7 @@ class ChromiumLoader(BaseLoader):
         browser_name: str = "chromium",  # default chrome is added
     ) -> str:
         """
-        Asynchronously scrape the content of a given URL using Playwright's sync API and scrolling.
+        Asynchronously scrape the content of a given URL using Patchright's sync API and scrolling.
 
         Notes:
         - The user gets to decide between scrolling to the bottom of the page or scrolling by a finite amount of time.
@@ -223,8 +223,7 @@ class ChromiumLoader(BaseLoader):
 
         import time
 
-        from playwright.async_api import async_playwright
-        from undetected_playwright import Malenia
+        from patchright.async_api import async_playwright
 
         logger.info(f"Starting scraping with scrolling support for {url}...")
 
@@ -236,13 +235,7 @@ class ChromiumLoader(BaseLoader):
                 async with async_playwright() as p:
                     browser = None
                     if browser_name == "chromium":
-                        browser = await p.chromium.launch(
-                            headless=self.headless,
-                            proxy=self.proxy,
-                            **self.browser_config,
-                        )
-                    elif browser_name == "firefox":
-                        browser = await p.firefox.launch(
+                        browser = await p.chromium.launch_persistent_context(
                             headless=self.headless,
                             proxy=self.proxy,
                             **self.browser_config,
@@ -250,7 +243,6 @@ class ChromiumLoader(BaseLoader):
                     else:
                         raise ValueError(f"Invalid browser name: {browser_name}")
                     context = await browser.new_context()
-                    await Malenia.apply_stealth(context)
                     page = await context.new_page()
                     await page.goto(url, wait_until="domcontentloaded")
                     await page.wait_for_load_state(self.load_state)
@@ -375,7 +367,7 @@ class ChromiumLoader(BaseLoader):
         self, url: str, browser_name: str = "chromium"
     ) -> str:
         """
-        Asynchronously scrape the content of a given URL by rendering JavaScript using Playwright.
+        Asynchronously scrape the content of a given URL by rendering JavaScript using patchright.
 
         Args:
             url (str): The URL to scrape.
@@ -387,7 +379,7 @@ class ChromiumLoader(BaseLoader):
             RuntimeError: When retry limit is reached without successful scraping
             ValueError: When an invalid browser name is provided
         """
-        from playwright.async_api import async_playwright
+        from patchright.async_api import async_playwright
 
         logger.info(f"Starting scraping with JavaScript support for {url}...")
         attempt = 0
@@ -398,12 +390,6 @@ class ChromiumLoader(BaseLoader):
                     browser = None
                     if browser_name == "chromium":
                         browser = await p.chromium.launch(
-                            headless=self.headless,
-                            proxy=self.proxy,
-                            **self.browser_config,
-                        )
-                    elif browser_name == "firefox":
-                        browser = await p.firefox.launch(
                             headless=self.headless,
                             proxy=self.proxy,
                             **self.browser_config,
