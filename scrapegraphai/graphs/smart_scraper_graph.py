@@ -112,6 +112,10 @@ class SmartScraperGraph(AbstractGraph):
                 "scrape_do": self.config.get("scrape_do"),
                 "storage_state": self.config.get("storage_state"),
                 "user_key": self.config.get("user_key"),
+                "save_screenshots": self.config.get("save_screenshots", False),
+                "save_screenshots_dir": self.config.get("save_screenshots_dir", None),
+                "user_agent": self.config.get("user_agent"),
+                "user_key": self.config.get("user_key"),
             },
         )
         parse_node = ParseNode(
