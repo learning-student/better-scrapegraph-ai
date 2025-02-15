@@ -67,6 +67,8 @@ class ChromiumLoader(BaseLoader):
 
         dynamic_import(backend, message)
 
+        self.save_screenshots = save_screenshots
+        self.save_screenshots_dir = save_screenshots_dir
         self.user_data_dir = user_data_dir
         self.browser_config = kwargs
         self.headless = headless
