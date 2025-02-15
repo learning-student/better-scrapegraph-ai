@@ -88,6 +88,10 @@ class FetchNode(BaseNode):
             str(uuid.uuid4()) if node_config is None  else node_config.get("user_key", str(uuid.uuid4()))
         )
 
+        self.user_agent = (
+            "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36" if node_config is None else node_config.get("user_agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36")
+        )
+
     def execute(self, state):
         """
         Executes the node's logic to fetch HTML content from a specified URL and
@@ -365,6 +369,7 @@ class FetchNode(BaseNode):
                     headless=self.headless,
                     storage_state=self.storage_state,
                     user_data_dir=self.get_tmp_user_data_dir(self.user_key),
+                    user_agent=self.user_agent,
                     **loader_kwargs,
                 )
                 document = loader.load()

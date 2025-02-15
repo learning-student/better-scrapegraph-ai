@@ -28,6 +28,7 @@ class ChromiumLoader(BaseLoader):
         self,
         urls: List[str],
         *,
+        user_agent: str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
         user_data_dir: str = None,
         backend: str = "patchright",
         headless: bool = True,
@@ -65,7 +66,7 @@ class ChromiumLoader(BaseLoader):
         self.user_data_dir = user_data_dir
         self.browser_config = kwargs
         self.headless = headless
-        self.user_agent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36"
+        self.user_agent = user_agent
         self.proxy = parse_or_search_proxy(proxy) if proxy else None
         self.urls = urls
         self.load_state = load_state
