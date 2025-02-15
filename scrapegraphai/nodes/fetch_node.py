@@ -374,12 +374,12 @@ class FetchNode(BaseNode):
                 self.logger.info("Using ChromiumLoader to fetch HTML content")
                 loader = ChromiumLoader(
                     [source],
+                    save_screenshots=self.save_screenshots,
+                    save_screenshots_dir=self.save_screenshots_dir,
                     headless=self.headless,
                     storage_state=self.storage_state,
                     user_data_dir=self.get_tmp_user_data_dir(self.user_key),
                     user_agent=self.user_agent,
-                    save_screenshots=self.save_screenshots,
-                    save_screenshots_dir=self.save_screenshots_dir,
                     **loader_kwargs,
                 )
                 document = loader.load()
