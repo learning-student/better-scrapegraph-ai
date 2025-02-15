@@ -1,5 +1,7 @@
 import asyncio
+import os
 from typing import Any, AsyncIterator, Iterator, List, Optional, Union
+import uuid
 
 import aiohttp
 import async_timeout
@@ -29,6 +31,8 @@ class ChromiumLoader(BaseLoader):
         urls: List[str],
         *,
         user_agent: str = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36",
+        save_screenshots: bool = False,
+        save_screenshots_dir: str = None,
         user_data_dir: str = None,
         backend: str = "patchright",
         headless: bool = True,
@@ -125,6 +129,8 @@ class ChromiumLoader(BaseLoader):
                             driver = uc.Chrome(options=options)
                             driver.get(url)
                             results = driver.page_source
+                            if self.save_screenshots:
+                                driver.save_screenshot(os.path.join(self.save_screenshots_dir, f"{uuid.uuid4()}.png"))
                             logger.info(
                                 f"Successfully scraped {url} with {self.browser_name}"
                             )
@@ -254,6 +260,8 @@ class ChromiumLoader(BaseLoader):
                     page = await context.new_page()
                     await page.goto(url, wait_until="domcontentloaded")
                     await page.wait_for_load_state(self.load_state)
+                    if self.save_screenshots:
+                        await page.screenshot(path=os.path.join(self.save_screenshots_dir, f"{uuid.uuid4()}.png"))
 
                     previous_height = None
                     start_time = time.time()
@@ -362,6 +370,8 @@ class ChromiumLoader(BaseLoader):
                     await page.wait_for_load_state(self.load_state)
                     results = await page.content()
                     logger.info("Content scraped")
+                    if self.save_screenshots:
+                        await page.screenshot(path=os.path.join(self.save_screenshots_dir, f"{uuid.uuid4()}.png"))
                     await browser.close()
                     return results
             except (aiohttp.ClientError, asyncio.TimeoutError, Exception) as e:
@@ -414,6 +424,8 @@ class ChromiumLoader(BaseLoader):
                     page = await context.new_page()
                     await page.goto(url, wait_until="networkidle")
                     results = await page.content()
+                    if self.save_screenshots:
+                        await page.screenshot(path=os.path.join(self.save_screenshots_dir, f"{uuid.uuid4()}.png"))
                     logger.info("Content scraped after JavaScript rendering")
                     return results
             except (aiohttp.ClientError, asyncio.TimeoutError, Exception) as e:

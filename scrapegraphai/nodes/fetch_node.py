@@ -91,6 +91,14 @@ class FetchNode(BaseNode):
         self.user_agent = (
             "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36" if node_config is None else node_config.get("user_agent", "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/133.0.0.0 Safari/537.36")
         )
+        
+        self.save_screenshots = (
+            False if node_config is None else node_config.get("save_screenshots", False)
+        )
+        
+        self.save_screenshots_dir = (
+            None if node_config is None else node_config.get("save_screenshots_dir", None)
+        )
 
     def execute(self, state):
         """
@@ -370,6 +378,8 @@ class FetchNode(BaseNode):
                     storage_state=self.storage_state,
                     user_data_dir=self.get_tmp_user_data_dir(self.user_key),
                     user_agent=self.user_agent,
+                    save_screenshots=self.save_screenshots,
+                    save_screenshots_dir=self.save_screenshots_dir,
                     **loader_kwargs,
                 )
                 document = loader.load()
